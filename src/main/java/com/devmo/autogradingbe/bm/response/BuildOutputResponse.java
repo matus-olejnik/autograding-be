@@ -1,4 +1,4 @@
-package com.devmo.autogradingbe.bm;
+package com.devmo.autogradingbe.bm.response;
 
 public class BuildOutputResponse {
 
