@@ -25,7 +25,7 @@ public class MainController {
             @PathVariable String studentId,
             @RequestParam("output-file") MultipartFile file) {
 
-        logger.info(String.format("Processing build output: studentId=%s, fileName=%s", studentId, file.getName()));
+        logger.info(String.format("Processing build output: studentId=%s, fileName=%s", studentId, file.getOriginalFilename()));
 
         if (printFileContentToLog) {
             BufferedReader bufferedReader;
