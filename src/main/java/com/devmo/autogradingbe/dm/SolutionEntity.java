@@ -2,6 +2,7 @@ package com.devmo.autogradingbe.dm;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,6 +23,8 @@ public class SolutionEntity implements Serializable {
     private String language;
 
     private LocalDateTime submittedOn;
+
+    private BigDecimal numberOfPoints;
 
     public SolutionEntity() {
     }
@@ -98,5 +101,14 @@ public class SolutionEntity implements Serializable {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    @Column(precision = 4, scale = 2)
+    public BigDecimal getNumberOfPoints() {
+        return numberOfPoints;
+    }
+
+    public void setNumberOfPoints(BigDecimal numberOfPoints) {
+        this.numberOfPoints = numberOfPoints;
     }
 }
