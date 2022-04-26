@@ -10,11 +10,18 @@ public class SolutionSubmitRequest {
 
     private String pullRequestId;
 
-    public SolutionSubmitRequest(String studentId, String repositoryUrl, String branchName, String pullRequestId) {
+    private String language;
+
+    public SolutionSubmitRequest(String studentId,
+                                 String repositoryUrl,
+                                 String branchName,
+                                 String pullRequestId,
+                                 String language) {
         this.studentId = studentId;
         this.repositoryUrl = repositoryUrl;
         this.branchName = branchName;
         this.pullRequestId = pullRequestId;
+        this.language = language;
     }
 
     @Override
@@ -24,6 +31,7 @@ public class SolutionSubmitRequest {
                 ", repositoryUrl='" + repositoryUrl + '\'' +
                 ", branchName='" + branchName + '\'' +
                 ", pullRequestId='" + pullRequestId + '\'' +
+                ", language='" + language + '\'' +
                 '}';
     }
 
@@ -57,5 +65,13 @@ public class SolutionSubmitRequest {
 
     public void setPullRequestId(String pullRequestId) {
         this.pullRequestId = pullRequestId;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

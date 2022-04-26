@@ -27,6 +27,7 @@ public class SolutionService implements SolutionSvc {
         solutionEntity.setRepositoryUrl(solutionSubmitRequest.getRepositoryUrl());
         solutionEntity.setBranchName(solutionSubmitRequest.getBranchName());
         solutionEntity.setPullRequestId(solutionSubmitRequest.getPullRequestId());
+        solutionEntity.setLanguage(solutionSubmitRequest.getLanguage());
 
         SolutionEntity savedSolutionEntity = solutionRepository.save(solutionEntity);
 

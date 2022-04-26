@@ -19,6 +19,8 @@ public class SolutionEntity implements Serializable {
 
     private String pullRequestId;
 
+    private String language;
+
     private LocalDateTime submittedOn;
 
     public SolutionEntity() {
@@ -29,13 +31,15 @@ public class SolutionEntity implements Serializable {
                           String repositoryUrl,
                           String branchName,
                           String pullRequestId,
-                          LocalDateTime submittedOn) {
+                          LocalDateTime submittedOn,
+                          String language) {
         this.id = id;
         this.studentId = studentId;
         this.repositoryUrl = repositoryUrl;
         this.branchName = branchName;
         this.pullRequestId = pullRequestId;
         this.submittedOn = submittedOn;
+        this.language = language;
     }
 
     @Id
@@ -86,5 +90,13 @@ public class SolutionEntity implements Serializable {
 
     public void setSubmittedOn(LocalDateTime submittedOn) {
         this.submittedOn = submittedOn;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
     }
 }

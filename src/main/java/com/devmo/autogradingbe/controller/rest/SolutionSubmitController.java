@@ -37,10 +37,11 @@ public class SolutionSubmitController {
     @PostMapping("/solution")
     public ResponseEntity<?> solutionSubmit(@RequestBody SolutionSubmitRequest request) {
 
-        logger.info(String.format("Processing solution submit %s", request));
+        logger.info(String.format("Start processing of solution %s", request));
 
         Long solutionId = solutionSvc.processSolutionSubmit(request);
 
+        logger.info(String.format("Finished processing of solution, solutionId=%s", solutionId));
 
         return ResponseEntity.ok().build();
     }
