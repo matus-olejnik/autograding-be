@@ -44,6 +44,7 @@ public class SolutionService implements SolutionSvc {
         solutionEntity.setSubmittedOn(DateTimeUtil.ldtNow());
 
         solutionEntity.setStudentId(solutionSubmitRequest.getStudentId());
+        solutionEntity.setGitUserName(solutionSubmitRequest.getGitUserName());
         solutionEntity.setRepositoryUrl(solutionSubmitRequest.getRepositoryUrl());
         solutionEntity.setBranchName(solutionSubmitRequest.getBranchName());
         solutionEntity.setPullRequestId(solutionSubmitRequest.getPullRequestId());

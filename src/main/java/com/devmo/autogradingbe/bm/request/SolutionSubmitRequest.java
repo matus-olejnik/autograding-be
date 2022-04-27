@@ -4,6 +4,8 @@ public class SolutionSubmitRequest {
 
     private String studentId;
 
+    private String gitUserName;
+
     private String repositoryUrl;
 
     private String branchName;
@@ -12,22 +14,14 @@ public class SolutionSubmitRequest {
 
     private String language;
 
-    public SolutionSubmitRequest(String studentId,
-                                 String repositoryUrl,
-                                 String branchName,
-                                 String pullRequestId,
-                                 String language) {
-        this.studentId = studentId;
-        this.repositoryUrl = repositoryUrl;
-        this.branchName = branchName;
-        this.pullRequestId = pullRequestId;
-        this.language = language;
+    public SolutionSubmitRequest() {
     }
 
     @Override
     public String toString() {
         return "SolutionSubmitRequest{" +
                 "studentId='" + studentId + '\'' +
+                ", gitUserName='" + gitUserName + '\'' +
                 ", repositoryUrl='" + repositoryUrl + '\'' +
                 ", branchName='" + branchName + '\'' +
                 ", pullRequestId='" + pullRequestId + '\'' +
@@ -73,5 +67,13 @@ public class SolutionSubmitRequest {
 
     public void setLanguage(String language) {
         this.language = language;
+    }
+
+    public String getGitUserName() {
+        return gitUserName;
+    }
+
+    public void setGitUserName(String gitUserName) {
+        this.gitUserName = gitUserName;
     }
 }

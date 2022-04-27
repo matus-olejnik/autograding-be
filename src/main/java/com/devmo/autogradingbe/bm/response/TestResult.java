@@ -5,9 +5,21 @@ import com.google.gson.Gson;
 public class TestResult {
 
     private String studentIdentifier;
+
     private String testIdentifier;
+
     private int numberOfPoints;
+
+    private String expectedValue;
+
+    private String actualValue;
+
     private TestResultTypeEnu testResult;
+
+    private String details;
+
+    public TestResult() {
+    }
 
     public TestResult(String studentIdentifier, String testIdentifier, int numberOfPoints, TestResultTypeEnu testResult) {
         this.studentIdentifier = studentIdentifier;
@@ -52,5 +64,29 @@ public class TestResult {
 
     public void setTestResult(TestResultTypeEnu testResult) {
         this.testResult = testResult;
+    }
+
+    public String getExpectedValue() {
+        return expectedValue;
+    }
+
+    public void setExpectedValue(String expectedValue) {
+        this.expectedValue = expectedValue;
+    }
+
+    public String getActualValue() {
+        return actualValue;
+    }
+
+    public void setActualValue(String actualValue) {
+        this.actualValue = actualValue;
+    }
+
+    public String getDetails() {
+        return details;
+    }
+
+    public void setDetails(String details) {
+        this.details = details;
     }
 }

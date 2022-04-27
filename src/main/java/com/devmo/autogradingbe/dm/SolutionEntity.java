@@ -14,6 +14,8 @@ public class SolutionEntity implements Serializable {
 
     private String studentId;
 
+    private String gitUserName;
+
     private String repositoryUrl;
 
     private String branchName;
@@ -121,5 +123,13 @@ public class SolutionEntity implements Serializable {
 
     public void setTestsResult(String testsResult) {
         this.testsResult = testsResult;
+    }
+
+    public String getGitUserName() {
+        return gitUserName;
+    }
+
+    public void setGitUserName(String gitUserName) {
+        this.gitUserName = gitUserName;
     }
 }
