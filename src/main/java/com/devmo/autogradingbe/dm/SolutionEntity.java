@@ -26,6 +26,8 @@ public class SolutionEntity implements Serializable {
 
     private BigDecimal numberOfPoints;
 
+    private String testsResult;
+
     public SolutionEntity() {
     }
 
@@ -110,5 +112,14 @@ public class SolutionEntity implements Serializable {
 
     public void setNumberOfPoints(BigDecimal numberOfPoints) {
         this.numberOfPoints = numberOfPoints;
+    }
+
+    @Lob
+    public String getTestsResult() {
+        return testsResult;
+    }
+
+    public void setTestsResult(String testsResult) {
+        this.testsResult = testsResult;
     }
 }

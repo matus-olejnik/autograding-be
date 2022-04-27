@@ -1,5 +1,6 @@
 package com.devmo.autogradingbe.controller.rest;
 
+import com.devmo.autogradingbe.service.SolutionSvc;
 import com.devmo.autogradingbe.util.FileUtil;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.RefSpec;
@@ -9,7 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -24,29 +28,36 @@ public class EvaluationController {
 
     private final UsernamePasswordCredentialsProvider credentialsProvider;
 
+    private final SolutionSvc solutionSvc;
+
     @Autowired
-    public EvaluationController(UsernamePasswordCredentialsProvider credentialsProvider) {
+    public EvaluationController(UsernamePasswordCredentialsProvider credentialsProvider, SolutionSvc solutionSvc) {
         this.credentialsProvider = credentialsProvider;
+        this.solutionSvc = solutionSvc;
     }
 
-    @PostMapping("/{studentId}/build-outputs")
-    public ResponseEntity<?> processBuildOutput(
-            @PathVariable String studentId,
-            @RequestParam("output-file") MultipartFile file) {
+    @PostMapping("/test-output")
+    public ResponseEntity<?> processTestOutput(
+            @RequestParam String testBranchName,
+            @RequestParam("outputTestFile") MultipartFile outputTestFile) {
 
-        logger.info(String.format("Processing build output: studentId=%s, fileName=%s", studentId, file.getOriginalFilename()));
+        logger.info(String.format("Processing test output: testBranchName=%s, fileName=%s",
+                testBranchName,
+                outputTestFile.getOriginalFilename()));
 
         if (printFileContentToLog) {
-            FileUtil.printFileContent(file);
+            FileUtil.printFileContent(outputTestFile);
         }
+
 
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/build-outputs")
-    public String processBuildOutput() {
+    public String processBuildOutput(@RequestParam String test) {
 
-        return "Testing...";
+
+        return test;
     }
 
     @GetMapping("/test")

@@ -1,5 +1,7 @@
 package com.devmo.autogradingbe.bm.response;
 
+import com.google.gson.Gson;
+
 public class TestResult {
 
     private String studentIdentifier;
@@ -16,12 +18,8 @@ public class TestResult {
 
     @Override
     public String toString() {
-        return "TestResult{" +
-                "studentIdentifier='" + studentIdentifier + '\'' +
-                ", testIdentifier='" + testIdentifier + '\'' +
-                ", numberOfPoints=" + numberOfPoints +
-                ", testResult=" + testResult +
-                '}';
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 
     public String getStudentIdentifier() {
