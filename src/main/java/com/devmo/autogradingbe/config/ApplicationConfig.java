@@ -14,9 +14,17 @@ public class ApplicationConfig {
     @Value("${git-access-token}")
     private String gitAccessToken;
 
+    @Value("${testing-github-repository-url}")
+    private String testingGithubRepositoryUrl;
+
     @Bean
-    public UsernamePasswordCredentialsProvider gitCredentialsProvider() {
-        return new UsernamePasswordCredentialsProvider(gitUserName, gitAccessToken);
+    public GitConfig gitConfig() {
+        return new GitConfig(
+                gitUserName,
+                gitAccessToken,
+                testingGithubRepositoryUrl,
+                new UsernamePasswordCredentialsProvider(gitUserName, gitAccessToken)
+        );
     }
 
 }
