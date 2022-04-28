@@ -5,6 +5,7 @@ import com.devmo.autogradingbe.config.GitConfig;
 import com.devmo.autogradingbe.service.SolutionSvc;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.transport.RefSpec;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ import java.util.UUID;
 public class SolutionSubmitController {
 
     private static final Logger logger = LoggerFactory.getLogger(SolutionSubmitController.class);
+
+    private static final String LOCAL_TEST_BRANCH_NAME_FORMAT = "%s/%s/%s";
+    private static final String REMOTE_TEST_BRANCH_NAME_FORMAT = "%s:%s";
 
     @Value("${print-file-content-to-log}")
     private boolean printFileContentToLog;
@@ -86,36 +90,26 @@ public class SolutionSubmitController {
         if ("java".equalsIgnoreCase(request.getLanguage())) {
             FileUtils.copyDirectory(
                     new File(studentDir.getPath() + File.separator + "src" + File.separator + "main"),
-                    new File(testDir.getPath() + File.separator + "src")
+                    new File(testDir.getPath() + File.separator + "src" + File.separator + "main")
             );
         }
 
-//        Git git = Git.open(new File("C:\\Users\\Matus\\IdeaProjects\\autograding-be\\autograding-test\\.git"));
-//        Git git = Git.open(new File("C:\\Users\\Matus\\IdeaProjects\\autograding-be\\autograding\\.git"));
+        String testBranchName = String.format(
+                LOCAL_TEST_BRANCH_NAME_FORMAT, solutionId, request.getStudentId(), request.getBranchName());
 
-//        git.checkout();
-//        Repository repository = git.getRepository();
-//        git.remoteSetUrl().setRemoteUri(new URIish("https://github.com/matus39/autograding-test.git")).call();
-//        StoredConfig config = git.getRepository().getConfig();
-//        config.setString("remote", "origin-test", "url", "https://github.com/matus39/autograding-test.git");
-//        config.save();
-//        git.rebase().setUpstream("origin-test").call();
+        testGit.branchCreate().setName(testBranchName).call();
+        testGit.checkout().setName(testBranchName).call();
+        testGit.add()
+                .addFilepattern(".")
+                .call();
 
-//        git.remoteAdd()
-//                .setName("origin-test")
-//                .setUri(new URIish(testingGithubRepositoryUrl))
-//                .call();
-//
-//        git.rebase().setUpstream("origin-test/zad2/java").setOperation(RebaseCommand.Operation.BEGIN).call();
+        testGit.commit().setMessage("add solution of student").call();
 
-
-//        git.branchCreate().setName("new-origin-test").call();
-//        git.push()
-//                .setRemote("origin-test")
-//                .setRefSpecs(new RefSpec("new-origin-test:new-origin-test"))
-//                .setCredentialsProvider(credentialsProvider)
-//                .call();
-
+        testGit.push()
+                .setRemote("origin")
+                .setRefSpecs(new RefSpec(String.format(REMOTE_TEST_BRANCH_NAME_FORMAT, testBranchName, testBranchName)))
+                .setCredentialsProvider(gitConfig.getCredentialsProvider())
+                .call();
 
         testGit.close();
         FileUtils.deleteDirectory(new File(mergingDir));
