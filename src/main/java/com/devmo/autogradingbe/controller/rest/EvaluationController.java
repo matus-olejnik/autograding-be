@@ -49,6 +49,7 @@ public class EvaluationController {
             FileUtil.printFileContent(outputTestFile);
         }
 
+        testBranchName = testBranchName.replace("refs/heads/", "");
         Long solutionId = Long.valueOf(testBranchName.substring(0, testBranchName.indexOf("/")));
         SolutionEntity solutionEntity = solutionSvc.processTestOutput(solutionId, outputTestFile);
 
