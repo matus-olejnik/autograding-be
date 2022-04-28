@@ -1,28 +1,34 @@
 package com.devmo.autogradingbe.bm.response;
 
+import java.math.BigDecimal;
+
 public class BuildOutputResponse {
 
-    private String studentId;
-    private String output;
+    private BigDecimal numberOfPoints;
 
-    public BuildOutputResponse(String studentId, String output) {
-        this.studentId = studentId;
-        this.output = output;
+    private String testsResult;
+
+    public BuildOutputResponse() {
     }
 
-    public String getStudentId() {
-        return studentId;
+    public BuildOutputResponse(BigDecimal numberOfPoints, String testsResult) {
+        this.numberOfPoints = numberOfPoints;
+        this.testsResult = testsResult;
     }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
+    public BigDecimal getNumberOfPoints() {
+        return numberOfPoints;
     }
 
-    public String getOutput() {
-        return output;
+    public void setNumberOfPoints(BigDecimal numberOfPoints) {
+        this.numberOfPoints = numberOfPoints;
     }
 
-    public void setOutput(String output) {
-        this.output = output;
+    public String getTestsResult() {
+        return testsResult;
+    }
+
+    public void setTestsResult(String testsResult) {
+        this.testsResult = testsResult;
     }
 }

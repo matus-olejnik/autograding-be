@@ -56,7 +56,7 @@ public class SolutionService implements SolutionSvc {
     }
 
     @Override
-    public BigDecimal processTestOutput(Long solutionId, MultipartFile file) {
+    public SolutionEntity processTestOutput(Long solutionId, MultipartFile file) {
         SolutionEntity solutionEntity = solutionRepository.findById(solutionId)
                 .orElseThrow(() -> new IllegalStateException("Solution was not found, id=" + solutionId));
 
@@ -66,7 +66,7 @@ public class SolutionService implements SolutionSvc {
         solutionEntity.setNumberOfPoints(numberOfPoints);
         solutionEntity.setTestsResult(testsResultPart);
 
-        return numberOfPoints;
+        return solutionEntity;
     }
 
     private String findTestsResultPart(MultipartFile file) {

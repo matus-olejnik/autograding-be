@@ -1,10 +1,13 @@
 package com.devmo.autogradingbe.controller.rest;
 
+import com.devmo.autogradingbe.config.GitConfig;
+import com.devmo.autogradingbe.dm.SolutionEntity;
 import com.devmo.autogradingbe.service.SolutionSvc;
 import com.devmo.autogradingbe.util.FileUtil;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.transport.RefSpec;
-import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.UUID;
 
 @RestController
 public class EvaluationController {
@@ -26,20 +31,20 @@ public class EvaluationController {
     @Value("${print-file-content-to-log}")
     private boolean printFileContentToLog;
 
-    private final UsernamePasswordCredentialsProvider credentialsProvider;
+    private final GitConfig gitConfig;
 
     private final SolutionSvc solutionSvc;
 
     @Autowired
-    public EvaluationController(UsernamePasswordCredentialsProvider credentialsProvider, SolutionSvc solutionSvc) {
-        this.credentialsProvider = credentialsProvider;
+    public EvaluationController(GitConfig gitConfig, SolutionSvc solutionSvc) {
+        this.gitConfig = gitConfig;
         this.solutionSvc = solutionSvc;
     }
 
     @PostMapping("/test-output")
     public ResponseEntity<?> processTestOutput(
             @RequestParam String testBranchName,
-            @RequestParam("outputTestFile") MultipartFile outputTestFile) {
+            @RequestParam("outputTestFile") MultipartFile outputTestFile) throws Exception {
 
         logger.info(String.format("Processing test output: testBranchName=%s, fileName=%s",
                 testBranchName,
@@ -48,6 +53,17 @@ public class EvaluationController {
         if (printFileContentToLog) {
             FileUtil.printFileContent(outputTestFile);
         }
+
+        Long solutionId = Long.valueOf(testBranchName.substring(testBranchName.indexOf("/")));
+        SolutionEntity solutionEntity = solutionSvc.processTestOutput(solutionId, outputTestFile);
+
+        GitHub github = new GitHubBuilder()
+                .withOAuthToken(gitConfig.getGitAccessToken(), gitConfig.getGitUserName())
+                .build();
+
+        GHRepository repository = github.getRepository("matus-olejnik/autograding");
+        repository.getPullRequest(4).comment("15b");
+        repository.getPullRequest(4).close();
 
 
         return ResponseEntity.ok().build();
@@ -60,26 +76,58 @@ public class EvaluationController {
         return test;
     }
 
+    @GetMapping("/test2")
+    public String test2() throws Exception {
+
+        GitHub github = new GitHubBuilder()
+                .withOAuthToken(gitConfig.getGitAccessToken(), gitConfig.getGitUserName())
+                .build();
+
+        GHRepository repository = github.getRepository("matus-olejnik/autograding");
+        repository.getPullRequest(4).comment("15b");
+        repository.getPullRequest(4).close();
+
+
+        System.out.println();
+
+//        GHRepository ghRepository =
+
+        return "test";
+    }
+
     @GetMapping("/test")
     public String test() throws Exception {
 
+        String mergingDir = "merging" + File.separator + UUID.randomUUID();
+        File studentDir = new File(mergingDir + File.separator + "student-solution");
+        if (!studentDir.exists()) {
+            studentDir.mkdirs();
+        }
 
-//        Git git = Git.cloneRepository()
-//                .setURI("https://github.com/matus-olejnik/autograding.git")
-////                .setURI("https://github.com/matus39/autograding-test.git")
-//                .setBranchesToClone(Arrays.asList("refs/heads/zad2"))
-////                .setBranchesToClone(Arrays.asList("refs/heads/master"))
-//                .setBranch("refs/heads/zad2")
-//                .setCredentialsProvider(credentialsProvider)
-//                .call();
-//
-//
+        Git git = Git.cloneRepository()
+                .setURI("https://github.com/matus-olejnik/autograding.git")
+                .setBranchesToClone(Arrays.asList("refs/heads/zad2/java"))
+                .setBranch("refs/heads/zad2/java")
+                .setDirectory(studentDir)
+                .setCredentialsProvider(gitConfig.getCredentialsProvider())
+                .call();
 
-        //                .setDirectory(new File("/path/to/targetdirectory"))
+        File testDir = new File(mergingDir + File.separator + "test");
+        if (!testDir.exists()) {
+            testDir.mkdirs();
+        }
+
+        Git.cloneRepository()
+                .setURI(gitConfig.getTestingGithubRepositoryUrl())
+                .setBranchesToClone(Arrays.asList("refs/heads/zad2/java"))
+                .setBranch("refs/heads/zad2/java")
+                .setDirectory(testDir)
+                .setCredentialsProvider(gitConfig.getCredentialsProvider())
+                .call();
 
 
 //        Git git = Git.open(new File("C:\\Users\\Matus\\IdeaProjects\\autograding-be\\autograding-test\\.git"));
-        Git git = Git.open(new File("C:\\Users\\Matus\\IdeaProjects\\autograding-be\\autograding\\.git"));
+//        Git git = Git.open(new File("C:\\Users\\Matus\\IdeaProjects\\autograding-be\\autograding\\.git"));
 
 //        git.checkout();
 //        Repository repository = git.getRepository();
@@ -91,19 +139,22 @@ public class EvaluationController {
 
 //        git.remoteAdd()
 //                .setName("origin-test")
-//                .setUri(new URIish("https://github.com/matus39/autograding-test.git"))
+//                .setUri(new URIish(testingGithubRepositoryUrl))
 //                .call();
+//
+//        git.rebase().setUpstream("origin-test/zad2/java").setOperation(RebaseCommand.Operation.BEGIN).call();
 
 
 //        git.branchCreate().setName("new-origin-test").call();
+//        git.push()
+//                .setRemote("origin-test")
+//                .setRefSpecs(new RefSpec("new-origin-test:new-origin-test"))
+//                .setCredentialsProvider(credentialsProvider)
+//                .call();
 
-        git.push()
-                .setRemote("origin-test")
-                .setRefSpecs(new RefSpec("new-origin-test:new-origin-test"))
-                .setCredentialsProvider(credentialsProvider)
-                .call();
 
         git.close();
+//        FileUtils.deleteDirectory(directory);
         return "Testing...";
     }
 }
