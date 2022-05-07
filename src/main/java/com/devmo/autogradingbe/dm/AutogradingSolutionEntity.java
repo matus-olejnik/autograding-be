@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "solution")
-public class SolutionEntity implements Serializable {
+@Table(name = "autograding_solution")
+public class AutogradingSolutionEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Long id;
@@ -30,16 +30,16 @@ public class SolutionEntity implements Serializable {
 
     private String testsResult;
 
-    public SolutionEntity() {
+    public AutogradingSolutionEntity() {
     }
 
-    public SolutionEntity(Long id,
-                          String studentId,
-                          String repositoryUrl,
-                          String branchName,
-                          String pullRequestId,
-                          LocalDateTime submittedOn,
-                          String language) {
+    public AutogradingSolutionEntity(Long id,
+                                     String studentId,
+                                     String repositoryUrl,
+                                     String branchName,
+                                     String pullRequestId,
+                                     LocalDateTime submittedOn,
+                                     String language) {
         this.id = id;
         this.studentId = studentId;
         this.repositoryUrl = repositoryUrl;

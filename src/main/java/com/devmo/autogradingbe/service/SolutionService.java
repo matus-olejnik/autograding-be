@@ -3,7 +3,7 @@ package com.devmo.autogradingbe.service;
 import com.devmo.autogradingbe.bm.request.SolutionSubmitRequest;
 import com.devmo.autogradingbe.bm.response.TestResult;
 import com.devmo.autogradingbe.bm.response.TestResultTypeEnu;
-import com.devmo.autogradingbe.dm.SolutionEntity;
+import com.devmo.autogradingbe.dm.AutogradingSolutionEntity;
 import com.devmo.autogradingbe.repository.SolutionRepository;
 import com.devmo.autogradingbe.util.DateTimeUtil;
 import com.google.gson.Gson;
@@ -44,34 +44,34 @@ public class SolutionService implements SolutionSvc {
 
     @Override
     public Long processSolutionSubmit(SolutionSubmitRequest solutionSubmitRequest) {
-        SolutionEntity solutionEntity = new SolutionEntity();
+        AutogradingSolutionEntity autogradingSolutionEntity = new AutogradingSolutionEntity();
 
-        solutionEntity.setSubmittedOn(DateTimeUtil.ldtNow());
+        autogradingSolutionEntity.setSubmittedOn(DateTimeUtil.ldtNow());
 
-        solutionEntity.setStudentId(solutionSubmitRequest.getStudentId());
-        solutionEntity.setGitUserName(solutionSubmitRequest.getGitUserName());
-        solutionEntity.setRepositoryUrl(solutionSubmitRequest.getRepositoryUrl());
-        solutionEntity.setBranchName(solutionSubmitRequest.getBranchName());
-        solutionEntity.setPullRequestId(solutionSubmitRequest.getPullRequestId());
-        solutionEntity.setLanguage(solutionSubmitRequest.getLanguage());
+        autogradingSolutionEntity.setStudentId(solutionSubmitRequest.getStudentId());
+        autogradingSolutionEntity.setGitUserName(solutionSubmitRequest.getGitUserName());
+        autogradingSolutionEntity.setRepositoryUrl(solutionSubmitRequest.getRepositoryUrl());
+        autogradingSolutionEntity.setBranchName(solutionSubmitRequest.getBranchName());
+        autogradingSolutionEntity.setPullRequestId(solutionSubmitRequest.getPullRequestId());
+        autogradingSolutionEntity.setLanguage(solutionSubmitRequest.getLanguage());
 
-        SolutionEntity savedSolutionEntity = solutionRepository.save(solutionEntity);
+        AutogradingSolutionEntity savedAutogradingSolutionEntity = solutionRepository.save(autogradingSolutionEntity);
 
-        return savedSolutionEntity.getId();
+        return savedAutogradingSolutionEntity.getId();
     }
 
     @Override
-    public SolutionEntity processTestOutput(Long solutionId, MultipartFile file) {
-        SolutionEntity solutionEntity = solutionRepository.findById(solutionId)
+    public AutogradingSolutionEntity processTestOutput(Long solutionId, MultipartFile file) {
+        AutogradingSolutionEntity autogradingSolutionEntity = solutionRepository.findById(solutionId)
                 .orElseThrow(() -> new IllegalStateException("Solution was not found, id=" + solutionId));
 
         String testsResultPart = findTestsResultPart(file);
         BigDecimal numberOfPoints = calculatePointsFromTestsResult(testsResultPart);
 
-        solutionEntity.setNumberOfPoints(numberOfPoints);
-        solutionEntity.setTestsResult(testsResultPart);
+        autogradingSolutionEntity.setNumberOfPoints(numberOfPoints);
+        autogradingSolutionEntity.setTestsResult(testsResultPart);
 
-        return solutionRepository.save(solutionEntity);
+        return solutionRepository.save(autogradingSolutionEntity);
     }
 
     private String findTestsResultPart(MultipartFile file) {

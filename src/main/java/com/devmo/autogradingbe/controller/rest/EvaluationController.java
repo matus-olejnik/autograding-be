@@ -1,7 +1,7 @@
 package com.devmo.autogradingbe.controller.rest;
 
 import com.devmo.autogradingbe.config.GitConfig;
-import com.devmo.autogradingbe.dm.SolutionEntity;
+import com.devmo.autogradingbe.dm.AutogradingSolutionEntity;
 import com.devmo.autogradingbe.service.SolutionSvc;
 import com.devmo.autogradingbe.util.FileUtil;
 import org.kohsuke.github.GHRepository;
@@ -51,20 +51,20 @@ public class EvaluationController {
 
         testBranchName = testBranchName.replace("refs/heads/", "");
         Long solutionId = Long.valueOf(testBranchName.substring(0, testBranchName.indexOf("/")));
-        SolutionEntity solutionEntity = solutionSvc.processTestOutput(solutionId, outputTestFile);
+        AutogradingSolutionEntity autogradingSolutionEntity = solutionSvc.processTestOutput(solutionId, outputTestFile);
 
         GitHub github = new GitHubBuilder()
                 .withOAuthToken(gitConfig.getGitAccessToken(), gitConfig.getGitUserName())
                 .build();
 
         int pullRequestId = Integer.parseInt(
-                solutionEntity.getPullRequestId().replaceAll("refs/pull/|/merge", ""));
+                autogradingSolutionEntity.getPullRequestId().replaceAll("refs/pull/|/merge", ""));
 
         GHRepository repository = github.getRepository(
-                solutionEntity.getRepositoryUrl().replaceAll("git://github\\.com/|https://github\\.com/|\\.git", ""));
+                autogradingSolutionEntity.getRepositoryUrl().replaceAll("git://github\\.com/|https://github\\.com/|\\.git", ""));
 
         repository.getPullRequest(pullRequestId)
-                .comment(solutionEntity.getNumberOfPoints() + "b\n\n" + solutionEntity.getTestsResult());
+                .comment(autogradingSolutionEntity.getNumberOfPoints() + "b\n\n" + autogradingSolutionEntity.getTestsResult());
         repository.getPullRequest(pullRequestId).close();
 
         return ResponseEntity.ok().build();
