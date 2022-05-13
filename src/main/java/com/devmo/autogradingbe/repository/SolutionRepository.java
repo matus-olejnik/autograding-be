@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SolutionRepository extends JpaRepository<AutogradingSolutionEntity, Long> {
 
+    boolean existsByBranchNameAndStudentId(String branchName, String studentId);
 }

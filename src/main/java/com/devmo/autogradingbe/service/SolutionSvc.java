@@ -9,4 +9,6 @@ public interface SolutionSvc {
     Long processSolutionSubmit(SolutionSubmitRequest solutionSubmitRequest);
 
     AutogradingSolutionEntity processTestOutput(Long solutionId, MultipartFile file);
+
+    boolean existsByBranchNameAndStudentId(String branchName, String studentId);
 }

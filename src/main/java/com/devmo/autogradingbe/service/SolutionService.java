@@ -49,11 +49,15 @@ public class SolutionService implements SolutionSvc {
         autogradingSolutionEntity.setSubmittedOn(DateTimeUtil.ldtNow());
 
         autogradingSolutionEntity.setStudentId(solutionSubmitRequest.getStudentId());
+        autogradingSolutionEntity.setStudentEmail(solutionSubmitRequest.getStudentEmail());
         autogradingSolutionEntity.setGitUserName(solutionSubmitRequest.getGitUserName());
         autogradingSolutionEntity.setRepositoryUrl(solutionSubmitRequest.getRepositoryUrl());
         autogradingSolutionEntity.setBranchName(solutionSubmitRequest.getBranchName());
         autogradingSolutionEntity.setPullRequestId(solutionSubmitRequest.getPullRequestId());
         autogradingSolutionEntity.setLanguage(solutionSubmitRequest.getLanguage());
+        autogradingSolutionEntity.setAssignmentExternalId(solutionSubmitRequest.getAssignmentExternalId());
+        autogradingSolutionEntity.setUploadToExternalSystem(solutionSubmitRequest.getUploadToExternalSystem());
+
 
         AutogradingSolutionEntity savedAutogradingSolutionEntity = solutionRepository.save(autogradingSolutionEntity);
 
@@ -72,6 +76,11 @@ public class SolutionService implements SolutionSvc {
         autogradingSolutionEntity.setTestsResult(testsResultPart);
 
         return solutionRepository.save(autogradingSolutionEntity);
+    }
+
+    @Override
+    public boolean existsByBranchNameAndStudentId(String branchName, String studentId) {
+        return solutionRepository.existsByBranchNameAndStudentId(branchName, studentId);
     }
 
     private String findTestsResultPart(MultipartFile file) {

@@ -1,12 +1,9 @@
 package com.devmo.autogradingbe.controller.rest;
 
-import com.devmo.autogradingbe.config.GitConfig;
 import com.devmo.autogradingbe.dm.AutogradingSolutionEntity;
+import com.devmo.autogradingbe.service.EvaluationSvc;
 import com.devmo.autogradingbe.service.SolutionSvc;
 import com.devmo.autogradingbe.util.FileUtil;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +23,14 @@ public class EvaluationController {
     @Value("${print-file-content-to-log}")
     private boolean printFileContentToLog;
 
-    private final GitConfig gitConfig;
-
     private final SolutionSvc solutionSvc;
 
+    private final EvaluationSvc evaluationSvc;
+
     @Autowired
-    public EvaluationController(GitConfig gitConfig, SolutionSvc solutionSvc) {
-        this.gitConfig = gitConfig;
+    public EvaluationController(SolutionSvc solutionSvc, EvaluationSvc evaluationSvc) {
         this.solutionSvc = solutionSvc;
+        this.evaluationSvc = evaluationSvc;
     }
 
     @PostMapping("/test-output")
@@ -53,19 +50,14 @@ public class EvaluationController {
         Long solutionId = Long.valueOf(testBranchName.substring(0, testBranchName.indexOf("/")));
         AutogradingSolutionEntity autogradingSolutionEntity = solutionSvc.processTestOutput(solutionId, outputTestFile);
 
-        GitHub github = new GitHubBuilder()
-                .withOAuthToken(gitConfig.getGitAccessToken(), gitConfig.getGitUserName())
-                .build();
+        String commentMessage = String.format("Z automatického hodnotenia bolo získaných %s bodov.\nVýsledky testov:\n\n%s",
+                autogradingSolutionEntity.getNumberOfPoints(), autogradingSolutionEntity.getTestsResult());
 
-        int pullRequestId = Integer.parseInt(
-                autogradingSolutionEntity.getPullRequestId().replaceAll("refs/pull/|/merge", ""));
-
-        GHRepository repository = github.getRepository(
-                autogradingSolutionEntity.getRepositoryUrl().replaceAll("git://github\\.com/|https://github\\.com/|\\.git", ""));
-
-        repository.getPullRequest(pullRequestId)
-                .comment(autogradingSolutionEntity.getNumberOfPoints() + "b\n\n" + autogradingSolutionEntity.getTestsResult());
-        repository.getPullRequest(pullRequestId).close();
+        evaluationSvc.sendMessageToStudent(
+                autogradingSolutionEntity.getPullRequestId(),
+                autogradingSolutionEntity.getRepositoryUrl(),
+                commentMessage
+        );
 
         return ResponseEntity.ok().build();
     }

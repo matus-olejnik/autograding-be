@@ -14,6 +14,8 @@ public class AutogradingSolutionEntity implements Serializable {
 
     private String studentId;
 
+    private String studentEmail;
+
     private String gitUserName;
 
     private String repositoryUrl;
@@ -26,27 +28,45 @@ public class AutogradingSolutionEntity implements Serializable {
 
     private LocalDateTime submittedOn;
 
+    private LocalDateTime deadline;
+
     private BigDecimal numberOfPoints;
 
     private String testsResult;
 
+    private Long assignmentExternalId;
+
+    private boolean uploadToExternalSystem;
+
     public AutogradingSolutionEntity() {
     }
 
-    public AutogradingSolutionEntity(Long id,
-                                     String studentId,
+    public AutogradingSolutionEntity(String studentId,
+                                     String studentEmail,
+                                     String gitUserName,
                                      String repositoryUrl,
                                      String branchName,
                                      String pullRequestId,
+                                     String language,
                                      LocalDateTime submittedOn,
-                                     String language) {
-        this.id = id;
+                                     LocalDateTime deadline,
+                                     BigDecimal numberOfPoints,
+                                     String testsResult,
+                                     Long assignmentExternalId,
+                                     boolean uploadToExternalSystem) {
         this.studentId = studentId;
+        this.studentEmail = studentEmail;
+        this.gitUserName = gitUserName;
         this.repositoryUrl = repositoryUrl;
         this.branchName = branchName;
         this.pullRequestId = pullRequestId;
-        this.submittedOn = submittedOn;
         this.language = language;
+        this.submittedOn = submittedOn;
+        this.deadline = deadline;
+        this.numberOfPoints = numberOfPoints;
+        this.testsResult = testsResult;
+        this.assignmentExternalId = assignmentExternalId;
+        this.uploadToExternalSystem = uploadToExternalSystem;
     }
 
     @Id
@@ -131,5 +151,37 @@ public class AutogradingSolutionEntity implements Serializable {
 
     public void setGitUserName(String gitUserName) {
         this.gitUserName = gitUserName;
+    }
+
+    public String getStudentEmail() {
+        return studentEmail;
+    }
+
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
+    }
+
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(LocalDateTime deadline) {
+        this.deadline = deadline;
+    }
+
+    public Long getAssignmentExternalId() {
+        return assignmentExternalId;
+    }
+
+    public void setAssignmentExternalId(Long assignmentExternalId) {
+        this.assignmentExternalId = assignmentExternalId;
+    }
+
+    public boolean isUploadToExternalSystem() {
+        return uploadToExternalSystem;
+    }
+
+    public void setUploadToExternalSystem(boolean uploadToExternalSystem) {
+        this.uploadToExternalSystem = uploadToExternalSystem;
     }
 }

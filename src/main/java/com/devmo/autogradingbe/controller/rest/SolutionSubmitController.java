@@ -2,7 +2,10 @@ package com.devmo.autogradingbe.controller.rest;
 
 import com.devmo.autogradingbe.bm.request.SolutionSubmitRequest;
 import com.devmo.autogradingbe.config.GitConfig;
+import com.devmo.autogradingbe.service.EvaluationSvc;
+import com.devmo.autogradingbe.service.ExternalSvc;
 import com.devmo.autogradingbe.service.SolutionSvc;
+import com.devmo.autogradingbe.util.DateTimeUtil;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.transport.RefSpec;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,10 +39,16 @@ public class SolutionSubmitController {
 
     private final SolutionSvc solutionSvc;
 
+    private final EvaluationSvc evaluationSvc;
+
+    private final ExternalSvc externalSvc;
+
     @Autowired
-    public SolutionSubmitController(GitConfig gitConfig, SolutionSvc solutionSvc) {
+    public SolutionSubmitController(GitConfig gitConfig, SolutionSvc solutionSvc, EvaluationSvc evaluationSvc, ExternalSvc externalSvc) {
         this.gitConfig = gitConfig;
         this.solutionSvc = solutionSvc;
+        this.evaluationSvc = evaluationSvc;
+        this.externalSvc = externalSvc;
     }
 
     @PostMapping("/code-sumbit")
@@ -52,6 +63,40 @@ public class SolutionSubmitController {
     public ResponseEntity<?> solutionSubmit(@RequestBody SolutionSubmitRequest request) throws Exception {
 
         logger.info(String.format("Start processing of solution %s", request));
+
+        boolean solutionIsAfterDeadline = false;
+
+        if (solutionSvc.existsByBranchNameAndStudentId(request.getBranchName(), request.getStudentId())) {
+            logger.info(String.format("Solution already exists branchName=%s, studentId=%s",
+                    request.getBranchName(), request.getStudentId())
+            );
+
+            evaluationSvc.sendMessageToStudent(
+                    request.getPullRequestId(),
+                    request.getRepositoryUrl(),
+                    "Riešenie zadania už bolo raz odovdzané."
+            );
+
+            return ResponseEntity.ok().build();
+
+        } else {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            LocalDateTime deadline = LocalDateTime.parse(request.getDeadline(), formatter);
+
+            if (DateTimeUtil.ldtNow().isAfter(deadline)) {
+                logger.info(String.format("Solution is submitted after deadline branchName=%s, studentId=%s",
+                        request.getBranchName(), request.getStudentId())
+                );
+
+                evaluationSvc.sendMessageToStudent(
+                        request.getPullRequestId(),
+                        request.getRepositoryUrl(),
+                        "Riešenie bolo odovzdané po termíne. Výsledný počet bodov je 0."
+                );
+
+                solutionIsAfterDeadline = true;
+            }
+        }
 
         Long solutionId = solutionSvc.processSolutionSubmit(request);
 
@@ -73,6 +118,15 @@ public class SolutionSubmitController {
                 .setCredentialsProvider(gitConfig.getCredentialsProvider())
                 .call()
                 .close();
+
+        if (Boolean.TRUE.equals(request.getUploadToExternalSystem())) {
+            externalSvc.backupFile(studentDir, request.getAssignmentExternalId(), request.getStudentEmail());
+        }
+
+        if (solutionIsAfterDeadline) {
+            FileUtils.deleteDirectory(new File(mergingDir));
+            return ResponseEntity.ok().build();
+        }
 
         File testDir = new File(mergingDir + File.separator + "test");
         if (!testDir.exists()) {

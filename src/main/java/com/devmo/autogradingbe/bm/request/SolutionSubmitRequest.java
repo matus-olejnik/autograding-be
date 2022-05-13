@@ -14,6 +14,14 @@ public class SolutionSubmitRequest {
 
     private String language;
 
+    private String studentEmail;
+
+    private Boolean uploadToExternalSystem;
+
+    private String deadline;
+
+    private Long assignmentExternalId;
+
     public SolutionSubmitRequest() {
     }
 
@@ -26,6 +34,10 @@ public class SolutionSubmitRequest {
                 ", branchName='" + branchName + '\'' +
                 ", pullRequestId='" + pullRequestId + '\'' +
                 ", language='" + language + '\'' +
+                ", studentEmail='" + studentEmail + '\'' +
+                ", uploadToExternalSystem=" + uploadToExternalSystem +
+                ", deadline='" + deadline + '\'' +
+                ", assignmentExternalId=" + assignmentExternalId +
                 '}';
     }
 
@@ -75,5 +87,37 @@ public class SolutionSubmitRequest {
 
     public void setGitUserName(String gitUserName) {
         this.gitUserName = gitUserName;
+    }
+
+    public String getStudentEmail() {
+        return studentEmail;
+    }
+
+    public void setStudentEmail(String studentEmail) {
+        this.studentEmail = studentEmail;
+    }
+
+    public Boolean getUploadToExternalSystem() {
+        return uploadToExternalSystem;
+    }
+
+    public void setUploadToExternalSystem(Boolean uploadToExternalSystem) {
+        this.uploadToExternalSystem = uploadToExternalSystem;
+    }
+
+    public String getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(String deadline) {
+        this.deadline = deadline;
+    }
+
+    public Long getAssignmentExternalId() {
+        return assignmentExternalId;
+    }
+
+    public void setAssignmentExternalId(Long assignmentExternalId) {
+        this.assignmentExternalId = assignmentExternalId;
     }
 }
