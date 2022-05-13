@@ -126,7 +126,10 @@ public class SolutionSubmitController {
                 .call();
 
         if (Boolean.TRUE.equals(request.getStaticSolution())) {
-            FileUtils.copyDirectory(new File(studentDir.getPath()), new File(testDir.getPath()));
+            FileUtils.copyDirectory(
+                    new File(studentDir.getPath() + File.separator + "src"),
+                    new File(testDir.getPath() + File.separator + "src")
+            );
 
         } else {
             if ("java".equalsIgnoreCase(request.getLanguage())) {
@@ -155,7 +158,12 @@ public class SolutionSubmitController {
                 .call();
 
         testGit.close();
-        FileUtils.deleteDirectory(new File(mergingDir));
+        try {
+            FileUtils.deleteDirectory(new File(mergingDir));
+
+        } catch (Exception e) {
+            //silent
+        }
 
         return ResponseEntity.ok().build();
     }

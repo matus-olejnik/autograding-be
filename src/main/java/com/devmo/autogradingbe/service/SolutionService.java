@@ -17,6 +17,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,6 +60,9 @@ public class SolutionService implements SolutionSvc {
         autogradingSolutionEntity.setAssignmentExternalId(solutionSubmitRequest.getAssignmentExternalId());
         autogradingSolutionEntity.setUploadToExternalSystem(solutionSubmitRequest.getUploadToExternalSystem());
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime deadline = LocalDateTime.parse(solutionSubmitRequest.getDeadline(), formatter);
+        autogradingSolutionEntity.setDeadline(deadline);
 
         AutogradingSolutionEntity savedAutogradingSolutionEntity = solutionRepository.save(autogradingSolutionEntity);
 

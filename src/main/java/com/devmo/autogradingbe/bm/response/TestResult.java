@@ -4,8 +4,6 @@ import com.google.gson.Gson;
 
 public class TestResult {
 
-    private String studentIdentifier;
-
     private String testIdentifier;
 
     private int numberOfPoints;
@@ -21,25 +19,10 @@ public class TestResult {
     public TestResult() {
     }
 
-    public TestResult(String studentIdentifier, String testIdentifier, int numberOfPoints, TestResultTypeEnu testResult) {
-        this.studentIdentifier = studentIdentifier;
-        this.testIdentifier = testIdentifier;
-        this.numberOfPoints = numberOfPoints;
-        this.testResult = testResult;
-    }
-
     @Override
     public String toString() {
         Gson gson = new Gson();
         return gson.toJson(this);
-    }
-
-    public String getStudentIdentifier() {
-        return studentIdentifier;
-    }
-
-    public void setStudentIdentifier(String studentIdentifier) {
-        this.studentIdentifier = studentIdentifier;
     }
 
     public String getTestIdentifier() {
