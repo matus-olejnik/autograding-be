@@ -51,20 +51,10 @@ public class SolutionSubmitController {
         this.externalSvc = externalSvc;
     }
 
-    @PostMapping("/static-solution")
-    public ResponseEntity<?> processBuildOutput(@RequestBody SolutionSubmitRequest request) {
-
-        logger.info("Processing build output: " + request);
-
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/solution")
     public ResponseEntity<?> solutionSubmit(@RequestBody SolutionSubmitRequest request) throws Exception {
 
         logger.info(String.format("Start processing of solution %s", request));
-
-        boolean solutionIsAfterDeadline = false;
 
         if (solutionSvc.existsByBranchNameAndStudentId(request.getBranchName(), request.getStudentId())) {
             logger.info(String.format("Solution already exists branchName=%s, studentId=%s",
@@ -74,7 +64,7 @@ public class SolutionSubmitController {
             evaluationSvc.sendMessageToStudent(
                     request.getPullRequestId(),
                     request.getRepositoryUrl(),
-                    "Riešenie zadania už bolo raz odovdzané."
+                    "Riešenie zadania už bolo raz odovzdané."
             );
 
             return ResponseEntity.ok().build();
@@ -84,7 +74,7 @@ public class SolutionSubmitController {
             LocalDateTime deadline = LocalDateTime.parse(request.getDeadline(), formatter);
 
             if (DateTimeUtil.ldtNow().isAfter(deadline)) {
-                logger.info(String.format("Solution is submitted after deadline branchName=%s, studentId=%s",
+                logger.info(String.format("Solution is submitted after deadline, branchName=%s, studentId=%s",
                         request.getBranchName(), request.getStudentId())
                 );
 
@@ -94,7 +84,6 @@ public class SolutionSubmitController {
                         "Riešenie bolo odovzdané po termíne. Výsledný počet bodov je 0."
                 );
 
-                solutionIsAfterDeadline = true;
             }
         }
 
@@ -123,11 +112,6 @@ public class SolutionSubmitController {
             externalSvc.backupFile(studentDir, request.getAssignmentExternalId(), request.getStudentEmail());
         }
 
-        if (solutionIsAfterDeadline) {
-            FileUtils.deleteDirectory(new File(mergingDir));
-            return ResponseEntity.ok().build();
-        }
-
         File testDir = new File(mergingDir + File.separator + "test");
         if (!testDir.exists()) {
             testDir.mkdirs();
@@ -141,11 +125,16 @@ public class SolutionSubmitController {
                 .setCredentialsProvider(gitConfig.getCredentialsProvider())
                 .call();
 
-        if ("java".equalsIgnoreCase(request.getLanguage())) {
-            FileUtils.copyDirectory(
-                    new File(studentDir.getPath() + File.separator + "src" + File.separator + "main"),
-                    new File(testDir.getPath() + File.separator + "src" + File.separator + "main")
-            );
+        if (Boolean.TRUE.equals(request.getStaticSolution())) {
+            FileUtils.copyDirectory(new File(studentDir.getPath()), new File(testDir.getPath()));
+
+        } else {
+            if ("java".equalsIgnoreCase(request.getLanguage())) {
+                FileUtils.copyDirectory(
+                        new File(studentDir.getPath() + File.separator + "src" + File.separator + "main"),
+                        new File(testDir.getPath() + File.separator + "src" + File.separator + "main")
+                );
+            }
         }
 
         String testBranchName = String.format(

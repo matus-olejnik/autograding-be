@@ -71,7 +71,9 @@ public class SolutionService implements SolutionSvc {
 
         String testsResultPart = findTestsResultPart(file);
         BigDecimal numberOfPoints = calculatePointsFromTestsResult(testsResultPart);
-
+        if (autogradingSolutionEntity.getSubmittedOn().isAfter(autogradingSolutionEntity.getDeadline())) {
+            numberOfPoints = BigDecimal.ZERO;
+        }
         autogradingSolutionEntity.setNumberOfPoints(numberOfPoints);
         autogradingSolutionEntity.setTestsResult(testsResultPart);
 
