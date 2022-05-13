@@ -136,7 +136,7 @@ public class AutogradingSolutionEntity implements Serializable {
         this.numberOfPoints = numberOfPoints;
     }
 
-    @Lob
+    @Column(columnDefinition = "text")
     public String getTestsResult() {
         return testsResult;
     }

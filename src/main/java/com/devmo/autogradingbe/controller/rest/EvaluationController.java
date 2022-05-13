@@ -2,6 +2,7 @@ package com.devmo.autogradingbe.controller.rest;
 
 import com.devmo.autogradingbe.dm.AutogradingSolutionEntity;
 import com.devmo.autogradingbe.service.EvaluationSvc;
+import com.devmo.autogradingbe.service.ExternalSvc;
 import com.devmo.autogradingbe.service.SolutionSvc;
 import com.devmo.autogradingbe.util.FileUtil;
 import org.slf4j.Logger;
@@ -27,10 +28,13 @@ public class EvaluationController {
 
     private final EvaluationSvc evaluationSvc;
 
+    private final ExternalSvc externalSvc;
+
     @Autowired
-    public EvaluationController(SolutionSvc solutionSvc, EvaluationSvc evaluationSvc) {
+    public EvaluationController(SolutionSvc solutionSvc, EvaluationSvc evaluationSvc, ExternalSvc externalSvc) {
         this.solutionSvc = solutionSvc;
         this.evaluationSvc = evaluationSvc;
+        this.externalSvc = externalSvc;
     }
 
     @PostMapping("/test-output")
@@ -58,6 +62,15 @@ public class EvaluationController {
                 autogradingSolutionEntity.getRepositoryUrl(),
                 commentMessage
         );
+
+        if (autogradingSolutionEntity.isUploadToExternalSystem()) {
+            externalSvc.updateEvaluation(
+                    autogradingSolutionEntity.getNumberOfPoints(),
+                    autogradingSolutionEntity.getTestsResult(),
+                    autogradingSolutionEntity.getAssignmentExternalId(),
+                    autogradingSolutionEntity.getStudentEmail()
+            );
+        }
 
         return ResponseEntity.ok().build();
     }

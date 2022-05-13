@@ -22,6 +22,8 @@ public class SolutionSubmitRequest {
 
     private Long assignmentExternalId;
 
+    private Boolean staticSolution;
+
     public SolutionSubmitRequest() {
     }
 
@@ -38,6 +40,7 @@ public class SolutionSubmitRequest {
                 ", uploadToExternalSystem=" + uploadToExternalSystem +
                 ", deadline='" + deadline + '\'' +
                 ", assignmentExternalId=" + assignmentExternalId +
+                ", staticSolution=" + staticSolution +
                 '}';
     }
 
@@ -119,5 +122,13 @@ public class SolutionSubmitRequest {
 
     public void setAssignmentExternalId(Long assignmentExternalId) {
         this.assignmentExternalId = assignmentExternalId;
+    }
+
+    public Boolean getStaticSolution() {
+        return staticSolution;
+    }
+
+    public void setStaticSolution(Boolean staticSolution) {
+        this.staticSolution = staticSolution;
     }
 }

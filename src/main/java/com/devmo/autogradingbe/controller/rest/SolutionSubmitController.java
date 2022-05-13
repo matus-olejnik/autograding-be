@@ -51,7 +51,7 @@ public class SolutionSubmitController {
         this.externalSvc = externalSvc;
     }
 
-    @PostMapping("/code-sumbit")
+    @PostMapping("/static-solution")
     public ResponseEntity<?> processBuildOutput(@RequestBody SolutionSubmitRequest request) {
 
         logger.info("Processing build output: " + request);
